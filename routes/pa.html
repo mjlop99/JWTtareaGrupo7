@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+</head>
+<body>
+  <div id ='main' >
+  <h1>Login</h1>
+  <form id="loginForm">
+    <input type="text" id="usuario" placeholder="Username" required>
+    <input type="password" id="contresena" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+ 
+  <h1>Registro</h1>
+  <form id="registerForm">
+    <input type="text" id="regNombre" placeholder="Tu Nombre" required>
+    <input type="text" id="regApellido" placeholder="Tu Apellido" required>
+    <input type="text" id="regUsuario" placeholder="Usuario" required>
+    <input type="password" id="regContresena" placeholder="Password" required>
+    <input type="email" id="regCorreo" placeholder="Correo Electronico" required>
+    <button type="submit">Register</button>
+  </form>
+ 
+  <h1>Acceder a Ruta Protegida</h1>
+  <button id="protectedBtn">Acceder</button>
+  <button id="forgotBtn">Olivide Contresena</button>
+</div>
+ 
+ 
+<div id ='segundoPagina' style="display: none;">
+  <h1>Restablecer Contresena</h1>
+  <form id="restablecer">
+    <input type="text" id="correoUsuario" placeholder="Email" required>
+    <input type="password" id="contresena2" placeholder="New Password" required>
+    <button type="submit">Restablecer Contresena</button>
+  </form>
+</div>
+ 
+<div id ='dashboard' style="display: none;">
+  <h1>dashboard</h1>
+  
+</div>
+ 
+ 
+  <script>
+    const main = document.getElementById('main');
+    const dashboard =  document.getElementById('dashboard')
+    const segundoPagina =  document.getElementById('segundoPagina')
+ 
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const usuario = document.getElementById('usuario').value;
+      const contresena = document.getElementById('contresena').value;
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario, contresena })
+      });
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      alert('Has iniciado Sesión!');
+    });
+ 
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById('regNombre').value;
+      const apellido = document.getElementById('regApellido').value;
+      const usuario = document.getElementById('regUsuario').value;
+      const contresena = document.getElementById('regContresena').value;
+      const correo = document.getElementById('regCorreo').value;
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, apellido, usuario, contresena, correo })
+      });
+      if (response.ok) {
+        alert('Registro Exitoso!');
+      } else {
+        alert('Error al registrar usuario');
+      }
+    });
+ 
+    document.getElementById('protectedBtn').addEventListener('click', async () => {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/auth/protected', {
+        method: 'GET',
+         headers: { 'Authorization': token }
+      });
+      if (response.ok) {
+        const data = await response.text();
+        alert(data);
+        main.style.display = 'none'
+        dashboard.style.display = 'block'
+      } else {
+        alert('Error al acceder a la ruta protejida');
+      }
+    });
+ 
+    document.getElementById('restablecer').addEventListener('click', async () => {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/auth/restablecer', {
+        method: 'PUT',
+        // headers: { 'Authorization': token }
+      });
+      if (response.ok) {
+        const data = await response.text();
+        alert(data);
+        main.style.display = 'block'
+        dashboard.style.display = 'none'
+      } else {
+        alert('Error al acceder a la ruta protejida');
+      }
+    });
+ 
+  const btnContrasensa = document.getElementById('forgotBtn');
+  btnContrasensa.addEventListener('click', ()=>{
+    main.style.display = 'none'
+    segundoPagina.style.display = 'block'
+  })
+ 
+
+
+  document
+        .getElementById("restablecer")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const contresena2 = document.getElementById("contresena2").value;
+          const correo = document.getElementById("correoUsuario").value;
+          const tokenContresena = localStorage.getItem("token");
+          const response = await fetch("/api/auth/protected", {
+            method: "GET",
+            headers: { Authorization: tokenContresena },
+          });
+          if (response.ok) {
+            const data = await response.text();
+           
+          } else {
+            alert("Error al acceder a la ruta protejida");
+          }
+        });
+
+
+        const responseCambio = await fetch("/api/auth/restablecer", {
+              method: "PUT",
+              body: JSON.stringify({ correo: correo, contresena: contresena2 }),
+              headers: { "Content-Type": "application/json" , 'Authorization': tokenContresena },
+            });
+            if (responseCambio.ok) {
+              const data = await responseCambio.text();
+              alert(data);
+            } else {
+              alert("Error al acceder a la ruta protejida");
+            }
+            main.style.display = "none";
+            dashboard.style.display = "block";
+ 
+  </script>
+</body>
+</html>
+
+
+// server.js
+const express = require('express');
+const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const bcrypt = require('bcryptjs');
+require('dotenv').config();
+
+const app = express();
+app.use(bodyParser.json());
+
+const users = {}; // Esto es solo para demostración, usa una base de datos real en producción
+
+const transporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+// Ruta para solicitar la recuperación de contraseña
+app.post('/request-password-reset', (req, res) => {
+  const { email } = req.body;
+  if (!users[email]) {
+    return res.status(400).send('Usuario no encontrado');
+  }
+
+  const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '7m' });
+  const resetLink = `http://localhost:3000/reset-password/${token}`;
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Password Reset',
+    text: `Haz clic en el siguiente enlace para restablecer tu contraseña: ${resetLink}`
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return res.status(500).send('Error enviando el correo');
+    }
+    res.send('Correo enviado');
+  });
+});
+
+// Ruta para mostrar el formulario de restablecimiento de contraseña
+app.get('/reset-password/:token', (req, res) => {
+  const { token } = req.params;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.send(`<form action="/reset-password/${token}" method="POST">
+                <input type="password" name="newPassword" placeholder="Nueva contraseña" required/>
+                <button type="submit">Restablecer contraseña</button>
+              </form>`);
+  } catch (error) {
+    res.status(400).send('Token inválido o expirado');
+  }
+});
+
+// Ruta para procesar el restablecimiento de contraseña
+app.post('/reset-password/:token', (req, res) => {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const hashedPassword = bcrypt.hashSync(newPassword, 8);
+    users[decoded.email] = hashedPassword; // Guarda la nueva contraseña
+    res.send('Contraseña restablecida');
+  } catch (error) {
+    res.status(400).send('Token inválido o expirado');
+  }
+});
+
+// Ruta para agregar un usuario (solo para demostración)
+app.post('/add-user', (req, res) => {
+  const { email, password } = req.body;
+  users[email] = bcrypt.hashSync(password, 8);
+  res.send('Usuario añadido');
+});
+
+app.listen(3000, () => {
+  console.log('Servidor corriendo en http://localhost:3000');
+});
+
+
+

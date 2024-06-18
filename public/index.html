@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="formulario-container">
+        <form class="formularioVisible" id="loginFormulario">
+            <input id="loginUsuario" type="text" placeholder="Ingresar usuario" value="mjlopez999">
+            <input id="loginContraseña" type="password" placeholder="Ingresar contraseña" value="12345">
+            <div class="opcionesAdicionales">
+                <a href="#" id="crearCuentaOpcionLogin">Crear una cuenta</a>
+                <a href="#" id="cambiarContraseniaLogin">Recuperar contraseña</a>
+            </div>
+            <button type="submit">Ingresar</button>
+        </form>
+
+
+        <form id="CrearCuentaFormulario">
+            <input id="crearCuentaCorreo" type="email" placeholder="Ingresar correo" required
+                value="mario992@gmail.com">
+            <input id="crearCuentaNombre" type="text" placeholder="Ingresar nombre" required value="mario">
+            <input id="crearCuentaApellido" type="text" placeholder="Ingresar apellido" required value="lopez">
+            <input id="crearCuentaUsuario" type="text" placeholder="Ingresar usuario" required value="mjlopez">
+            <input id="crearCuentaContrasenia" type="password" placeholder="Ingresar contraseña" required value="12345">
+            <button type="submit">Crear cuenta</button>
+        </form>
+        <form id="cambiarContraseniaFormulario">
+            <input id="cambiarContraseniaCorreo" type="email" placeholder="Ingresar correo" required>
+           
+            <button type="submit">Cambiar contraseña</button>
+        </form>
+
+        <div class="opcionesAdicionales">
+            <a href="#" id="ingresarPaginaSecreto">
+                <p>Ingresar</p>
+            </a>
+            <a href="#" class="volverLogin">Volver al inicio de sesión</a>
+        </div>
+        <div id="notificacionOK" class="notificacion exito">
+        </div>
+        <div id="notificacionError" class="notificacion error">
+        </div>
+        <div id="notificacionRestricion" class="notificacion restricion">
+        </div>
+    </div>
+    <script src="/js/index.js"></script>
+</body>
+
+</html>

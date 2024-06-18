@@ -1,0 +1,120 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 24px;
+    text-decoration: none;
+}
+body{
+    width: 100%;
+    height: 100vh;
+    display: grid;
+}
+
+.formulario-container{
+    padding: 40px;
+    margin:  auto;
+    border-radius: 12px;
+    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+    display: grid;
+    width: auto;
+    place-content: center;
+    max-width: 800px;
+
+    form{
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+
+        input{
+            border-radius: 8px;
+            padding: 0 20px;
+            border: none;
+            box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 40px;
+            width: 500px;
+            height: 40px;
+
+        }
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(26, 25, 87, 0.8);
+        }
+
+        button{
+            margin: 40px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            background-color: rgb(137, 94, 177);
+            transition: ease-in-out 500ms;
+        }
+        button:hover{
+            transform: scale(1.1);
+        }
+    }
+    .opcionesAdicionales{
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+
+        a{
+            color: rgb(137, 94, 177);
+            text-decoration: none;
+            transition: ease-in-out 500ms;
+
+        }
+        a:hover{
+            color: blueviolet;
+            margin: 0 20px;
+            transform: scale(1.15);
+        }
+
+    }
+    .notificacion {
+        width: 100%;
+        display: none;
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        padding: 10px 20px;
+        color: #fff;
+        border-radius: 4px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transition: opacity 1s ease;
+    }
+    .exito{
+        background-color: #0ce00c;
+
+    }
+    .error{
+        background-color: #e02c0c;
+        
+    }
+    .restricion{
+        background-color: #f09541;
+
+    }
+}
+
+#CrearCuentaFormulario{
+    display: none;
+}
+#cambiarContraseniaFormulario{
+    display: none;
+}
+#contraseñaPermiso{
+    display: flex;
+}
+.dashBoard{
+    display: grid;
+    place-content: center;
+}
+
+
+
+
